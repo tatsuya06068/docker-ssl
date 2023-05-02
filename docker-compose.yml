@@ -1,0 +1,27 @@
+version: '3.9'
+services:
+  app:
+    build: .
+    ports: 
+      - "3000:3000"
+    volumes:
+      - type: bind
+        source: ./src
+        target: /src/app
+    tty: true
+  https-portal:
+    image: steveltn/https-portal:1
+    container_name: https_portal
+    ports:
+      - "80:80"
+      - "443:443"
+    tty: true
+    restart: always
+    volumes:
+      - ./Certs/:/var/lib/https-portal/
+    environment:
+      DOMAINS: 'localhost -> http://app:3000'
+      STAGE: "production"
+      # FORCE_RENEW: 'true'
+    links:
+      - app
